@@ -14,7 +14,7 @@ from clu import metrics
 import ml_collections
 
 from models import initialized, get_model
-from datasets import TFDataLoader, get_cifar10_lable_noise_datasets
+from datasets import TFDataLoader, get_cifar10_lable_noise_datasets, get_cifar100_lable_noise_datasets
 from sparsify import (safe, admm, iht, gmp, SAFETrainState, SparsifierTrainState, BaseTrainState,
                       sparsity2count, weight_count, sp_schedules)
 KeyArray = Any
@@ -47,7 +47,10 @@ def configure_train(config: ml_collections.ConfigDict,
       eval_iter    = TFDataLoader(config.dataset, config.batch_size, train=False)
     else:
         assert config.dataset=='cifar10', 'Label noise is only supported for CIFAR10 dataset'
-        train_iter, eval_iter = get_cifar10_lable_noise_datasets(config.batch_size, config.label_noise_ratio, config.seed)
+        if config.dataset=='cifar10':
+            train_iter, eval_iter = get_cifar10_lable_noise_datasets(config.batch_size, config.label_noise_ratio, config.seed)
+        elif config.dataset=='cifar100':
+            train_iter, eval_iter = get_cifar100_lable_noise_datasets(config.batch_size, config.label_noise_ratio, config.seed)
     
     ############################# Prepare model, loss, and metric #############################
     
